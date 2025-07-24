@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
+import '../services/kcc_service.dart';
 
+/// Configuration data for conversion options
+class ConversionSettings {
+  final String deviceProfile;
+  final bool mangaMode;
+  final bool upscale;
+  final bool noMargin;
+
+  const ConversionSettings({
+    required this.deviceProfile,
+    required this.mangaMode,
+    required this.upscale,
+    required this.noMargin,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'deviceProfile': deviceProfile,
+      'mangaMode': mangaMode,
+      'upscale': upscale,
+      'noMargin': noMargin,
+    };
+  }
+}
+
+/// Widget for configuring comic conversion options
 class ConversionOptionsWidget extends StatefulWidget {
-  final Function(Map<String, dynamic>)? onChanged;
+  final void Function(ConversionSettings)? onChanged;
   
   const ConversionOptionsWidget({
     super.key,
@@ -13,27 +39,31 @@ class ConversionOptionsWidget extends StatefulWidget {
 }
 
 class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
-  final List<String> deviceProfiles = [
-    'Kindle Paperwhite',
-    'Kobo Clara 2E',
-    'Onyx Boox Nova 3',
-    'Generic E-reader',
-  ];
-  
-  String selectedDeviceProfile = 'Kindle Paperwhite';
-  bool mangaMode = false;
-  bool upscale = false;
-  bool noMargin = false;
+  late final List<String> _deviceProfiles;
+  String _selectedDeviceProfile = 'Kindle Paperwhite';
+  bool _mangaMode = false;
+  bool _upscale = false;
+  bool _noMargin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get device profiles from KCC service
+    _deviceProfiles = KccService.deviceProfiles;
+    // Notify with initial values after build is complete
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _notifyChange();
+    });
+  }
 
   void _notifyChange() {
-    if (widget.onChanged != null) {
-      widget.onChanged!({
-        'deviceProfile': selectedDeviceProfile,
-        'mangaMode': mangaMode,
-        'upscale': upscale,
-        'noMargin': noMargin,
-      });
-    }
+    final settings = ConversionSettings(
+      deviceProfile: _selectedDeviceProfile,
+      mangaMode: _mangaMode,
+      upscale: _upscale,
+      noMargin: _noMargin,
+    );
+    widget.onChanged?.call(settings);
   }
 
   @override
@@ -55,11 +85,11 @@ class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
             border: Border.all(color: Colors.grey[300]!),
           ),
           child: DropdownButton<String>(
-            value: selectedDeviceProfile,
+            value: _selectedDeviceProfile,
             isExpanded: true,
             underline: const SizedBox(),
             icon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
-            items: deviceProfiles.map((String profile) {
+            items: _deviceProfiles.map((String profile) {
               return DropdownMenuItem<String>(
                 value: profile,
                 child: Text(profile),
@@ -68,7 +98,7 @@ class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
             onChanged: (String? newValue) {
               if (newValue != null) {
                 setState(() {
-                  selectedDeviceProfile = newValue;
+                  _selectedDeviceProfile = newValue;
                 });
                 _notifyChange();
               }
@@ -80,10 +110,10 @@ class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
         
         CheckboxListTile(
           title: const Text('Manga Mode'),
-          value: mangaMode,
+          value: _mangaMode,
           onChanged: (bool? value) {
             setState(() {
-              mangaMode = value ?? false;
+              _mangaMode = value ?? false;
             });
             _notifyChange();
           },
@@ -100,10 +130,10 @@ class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
         
         CheckboxListTile(
           title: const Text('Upscale'),
-          value: upscale,
+          value: _upscale,
           onChanged: (bool? value) {
             setState(() {
-              upscale = value ?? false;
+              _upscale = value ?? false;
             });
             _notifyChange();
           },
@@ -120,10 +150,10 @@ class _ConversionOptionsWidgetState extends State<ConversionOptionsWidget> {
         
         CheckboxListTile(
           title: const Text('No Margin'),
-          value: noMargin,
+          value: _noMargin,
           onChanged: (bool? value) {
             setState(() {
-              noMargin = value ?? false;
+              _noMargin = value ?? false;
             });
             _notifyChange();
           },
