@@ -23,7 +23,7 @@ class _FileSelectionWidgetState extends State<FileSelectionWidget> {
         allowedExtensions: ['cbz', 'cbr', 'pdf'],
         allowMultiple: false,
       );
-      
+
       if (result != null && result.files.single.path != null) {
         setState(() {
           selectedFilePath = result.files.single.path!;
@@ -59,7 +59,7 @@ class _FileSelectionWidgetState extends State<FileSelectionWidget> {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: isLoading ? null : _pickFile,
-          child: isLoading 
+          child: isLoading
               ? const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -76,8 +76,8 @@ class _FileSelectionWidgetState extends State<FileSelectionWidget> {
         ),
         const SizedBox(height: 16),
         Text(
-          selectedFilePath.isEmpty 
-              ? 'No file selected' 
+          selectedFilePath.isEmpty
+              ? 'No file selected'
               : 'Selected: ${selectedFilePath.split('/').last}',
           style: TextStyle(
             color: selectedFilePath.isEmpty ? Colors.grey : Colors.black,
@@ -87,10 +87,7 @@ class _FileSelectionWidgetState extends State<FileSelectionWidget> {
           const SizedBox(height: 4),
           Text(
             'Full path: $selectedFilePath',
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            ),
+            style: const TextStyle(fontSize: 12, color: Colors.grey),
           ),
         ],
       ],
